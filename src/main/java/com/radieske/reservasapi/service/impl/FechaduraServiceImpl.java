@@ -1,4 +1,4 @@
-package com.radieske.reservasapi.service;
+package com.radieske.reservasapi.service.impl;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,40 +8,41 @@ import org.springframework.stereotype.Service;
 
 import com.radieske.reservasapi.model.Fechadura;
 import com.radieske.reservasapi.repository.FechaduraRepository;
+import com.radieske.reservasapi.service.FechaduraService;
 
 @Service
 public class FechaduraServiceImpl implements FechaduraService
 {
 	@Autowired
-	private FechaduraRepository usuarioRepository;
+	private FechaduraRepository fechaduraRepository;
 
 	@Override
 	public Fechadura save(Fechadura fechadura)
 	{
-		return usuarioRepository.save(fechadura);
+		return fechaduraRepository.save(fechadura);
 	}
 
 	@Override
 	public List<Fechadura> findAll()
 	{
-		return usuarioRepository.findAll();
+		return fechaduraRepository.findAll();
 	}
 
 	@Override
 	public Optional<Fechadura> findById(Long id)
 	{
-		return usuarioRepository.findById(id);
+		return fechaduraRepository.findById(id);
 	}
 
 	@Override
 	public Fechadura update(Fechadura fechadura)
 	{
-		return usuarioRepository.save(fechadura);
+		return fechaduraRepository.save(fechadura);
 	}
 
 	@Override
 	public void deleteById(Long id)
 	{
-		usuarioRepository.deleteById(id);
+		fechaduraRepository.deleteById(id);
 	}
 }

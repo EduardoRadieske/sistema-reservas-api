@@ -1,4 +1,4 @@
-package com.radieske.reservasapi.service;
+package com.radieske.reservasapi.service.impl;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.radieske.reservasapi.model.Usuario;
 import com.radieske.reservasapi.repository.UsuarioRepository;
+import com.radieske.reservasapi.service.UsuarioService;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService

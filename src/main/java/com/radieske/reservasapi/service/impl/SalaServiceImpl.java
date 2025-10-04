@@ -1,4 +1,4 @@
-package com.radieske.reservasapi.service;
+package com.radieske.reservasapi.service.impl;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,40 +8,41 @@ import org.springframework.stereotype.Service;
 
 import com.radieske.reservasapi.model.Sala;
 import com.radieske.reservasapi.repository.SalaRepository;
+import com.radieske.reservasapi.service.SalaService;
 
 @Service
 public class SalaServiceImpl implements SalaService
 {
 	@Autowired
-	private SalaRepository usuarioRepository;
+	private SalaRepository salaRepository;
 
 	@Override
 	public Sala save(Sala sala)
 	{
-		return usuarioRepository.save(sala);
+		return salaRepository.save(sala);
 	}
 
 	@Override
 	public List<Sala> findAll()
 	{
-		return usuarioRepository.findAll();
+		return salaRepository.findAll();
 	}
 
 	@Override
 	public Optional<Sala> findById(Long id)
 	{
-		return usuarioRepository.findById(id);
+		return salaRepository.findById(id);
 	}
 
 	@Override
 	public Sala update(Sala sala)
 	{
-		return usuarioRepository.save(sala);
+		return salaRepository.save(sala);
 	}
 
 	@Override
 	public void deleteById(Long id)
 	{
-		usuarioRepository.deleteById(id);
+		salaRepository.deleteById(id);
 	}
 }
