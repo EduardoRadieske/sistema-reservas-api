@@ -1,5 +1,7 @@
 package com.radieske.reservasapi.model;
 
+import com.radieske.reservasapi.enums.Status;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

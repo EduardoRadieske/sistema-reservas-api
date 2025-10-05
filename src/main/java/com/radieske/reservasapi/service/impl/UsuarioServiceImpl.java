@@ -45,4 +45,11 @@ public class UsuarioServiceImpl implements UsuarioService
 	{
 		usuarioRepository.deleteById(id);
 	}
+
+	@Override
+	public Usuario findByUsuario(String usuario)
+	{
+		return usuarioRepository.findByUsuario(usuario)
+				.orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+	}
 }

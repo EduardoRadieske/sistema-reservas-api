@@ -2,6 +2,8 @@ package com.radieske.reservasapi.model;
 
 import java.time.LocalDateTime;
 
+import com.radieske.reservasapi.enums.Status;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

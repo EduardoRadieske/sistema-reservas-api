@@ -16,5 +16,6 @@ public interface UsuarioService
 	Usuario update(Usuario usuario);
 
 	void deleteById(Long id);
-
+	
+	Usuario findByUsuario(String usuario);
 }
