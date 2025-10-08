@@ -41,13 +41,11 @@ public class UserAuthenticationFilter extends OncePerRequestFilter
 			{
 				String subject = jwtTokenProvider.getSubjectFromToken(token);
 				Usuario user = userRepository.findByUsuario(subject).get();
+				
+				List<SimpleGrantedAuthority> roles = List.of(new SimpleGrantedAuthority("ROLE_" + user.getTipo().name().toLowerCase()));
 
-				List<SimpleGrantedAuthority> roles = List.of(new SimpleGrantedAuthority(user.getTipo().name()));
-
-				// Cria um objeto de autenticação do Spring Security
 				Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsuario(), null, roles);
 
-				// Define o objeto de autenticação no contexto de segurança do Spring Security
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			} else
 			{
