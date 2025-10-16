@@ -29,7 +29,7 @@ public class ProvedorServiceImpl implements ProvedorService
 	}
 
 	@Override
-	public Optional<Provedor> findById(Long id)
+	public Optional<Provedor> findById(Integer id)
 	{
 		return provedorRepository.findById(id);
 	}
@@ -41,7 +41,7 @@ public class ProvedorServiceImpl implements ProvedorService
 	}
 
 	@Override
-	public void deleteById(Long id)
+	public void deleteById(Integer id)
 	{
 		provedorRepository.deleteById(id);
 	}

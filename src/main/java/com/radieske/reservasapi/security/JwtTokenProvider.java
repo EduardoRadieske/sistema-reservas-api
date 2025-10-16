@@ -39,6 +39,8 @@ public class JwtTokenProvider
 					.withIssuedAt(creationDate()) // Define a data de emissão do token
 					.withExpiresAt(expirationDate()) // Define a data de expiração do token
 					.withSubject(user.getUsuario()) // Define o assunto do token (neste caso, o nome de usuário)
+					.withClaim("ROLE", user.getTipo().name())
+					.withJWTId(user.getIdUsuario().toString())
 					.sign(algorithm); // Assina o token usando o algoritmo especificado
 		} catch (JWTCreationException exception)
 		{

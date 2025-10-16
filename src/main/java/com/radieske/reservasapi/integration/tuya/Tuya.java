@@ -24,5 +24,11 @@ public class Tuya implements Integration
 		Fechadura fechadura = reserva.getSala().getFechadura();
 		
 		// TODO implements methods
+		
+		auth.getToken();
+		
+		provedor.getSecret();
+		
+		fechadura.getChaveDispositivo();
 	}
 }

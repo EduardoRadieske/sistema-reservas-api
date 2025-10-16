@@ -35,7 +35,7 @@ public class UsuarioController
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Optional<Usuario>> findById(@PathVariable Long id)
+	public ResponseEntity<Optional<Usuario>> findById(@PathVariable Integer id)
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(usuarioService.findById(id));
 	}
@@ -53,7 +53,7 @@ public class UsuarioController
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> delete(@PathVariable Long id)
+	public ResponseEntity<?> delete(@PathVariable Integer id)
 	{
 		usuarioService.deleteById(id);
 		return ResponseEntity.status(HttpStatus.OK).build();

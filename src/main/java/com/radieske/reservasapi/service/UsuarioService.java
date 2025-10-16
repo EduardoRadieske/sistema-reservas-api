@@ -11,11 +11,11 @@ public interface UsuarioService
 
 	List<Usuario> findAll();
 
-	Optional<Usuario> findById(Long id);
+	Optional<Usuario> findById(Integer id);
 
 	Usuario update(Usuario usuario);
 
-	void deleteById(Long id);
+	void deleteById(Integer id);
 	
 	Usuario findByUsuario(String usuario);
 }

@@ -3,7 +3,6 @@ package com.radieske.reservasapi.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,11 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.radieske.reservasapi.model.Fechadura;
-import com.radieske.reservasapi.model.Provedor;
 import com.radieske.reservasapi.model.Usuario;
 import com.radieske.reservasapi.repository.UsuarioRepository;
 import com.radieske.reservasapi.security.JwtTokenProvider;

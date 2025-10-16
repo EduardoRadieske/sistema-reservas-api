@@ -3,17 +3,18 @@ package com.radieske.reservasapi.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.radieske.reservasapi.dto.SalaDTO;
 import com.radieske.reservasapi.model.Sala;
 
 public interface SalaService
 {
-	Sala save(Sala sala);
+	SalaDTO save(Sala sala);
 
-	List<Sala> findAll();
+	List<SalaDTO> findAll();
 
-	Optional<Sala> findById(Long id);
+	Optional<SalaDTO> findById(Integer id);
 
-	Sala update(Sala sala);
+	SalaDTO update(Sala sala);
 
-	void deleteById(Long id);
+	void deleteById(Integer id);
 }

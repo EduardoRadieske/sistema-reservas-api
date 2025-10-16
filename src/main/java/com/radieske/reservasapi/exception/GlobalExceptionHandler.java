@@ -15,14 +15,17 @@ public class GlobalExceptionHandler
 	@ExceptionHandler({ RuntimeException.class })
 	public ResponseEntity<Object> handleRuntimeException(RuntimeException exception)
 	{
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
+		Map<String, Object> error = new HashMap<>();
+        error.put("error", exception.getMessage());
+        error.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
 	}
 	
 	@ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleBadCredentials() {
         Map<String, Object> error = new HashMap<>();
         error.put("error", "Usuário ou senha inválidos");
-        error.put("status", 401);
-        return ResponseEntity.status(401).body(error);
+        error.put("status", HttpStatus.UNAUTHORIZED.value());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 }

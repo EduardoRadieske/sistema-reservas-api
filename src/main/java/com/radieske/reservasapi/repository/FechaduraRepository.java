@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.radieske.reservasapi.model.Fechadura;
 
-public interface FechaduraRepository extends JpaRepository<Fechadura, Long>
+public interface FechaduraRepository extends JpaRepository<Fechadura, Integer>
 {
 	
 }

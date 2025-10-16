@@ -3,17 +3,21 @@ package com.radieske.reservasapi.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.radieske.reservasapi.dto.ReservaDTO;
 import com.radieske.reservasapi.model.Reserva;
+import com.radieske.reservasapi.model.Usuario;
 
 public interface ReservaService
 {
-	Reserva save(Reserva reserva);
+	ReservaDTO save(Reserva reserva);
 
-	List<Reserva> findAll();
+	List<ReservaDTO> findAll();
 
-	Optional<Reserva> findById(Long id);
+	Optional<ReservaDTO> findById(Integer id);
 
-	Reserva update(Reserva reserva);
+	ReservaDTO update(Reserva reserva);
 
-	void deleteById(Long id);
+	void deleteById(Integer id);
+	
+	List<ReservaDTO> findActive(Usuario usuario);
 }

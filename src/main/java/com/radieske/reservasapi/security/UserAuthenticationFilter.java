@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.radieske.reservasapi.config.SecurityConfig;
 import com.radieske.reservasapi.model.Usuario;
 import com.radieske.reservasapi.repository.UsuarioRepository;
@@ -39,10 +41,23 @@ public class UserAuthenticationFilter extends OncePerRequestFilter
 			String token = recoveryToken(request);
 			if (token != null)
 			{
-				String subject = jwtTokenProvider.getSubjectFromToken(token);
-				Usuario user = userRepository.findByUsuario(subject).get();
+				Usuario user;
 				
-				List<SimpleGrantedAuthority> roles = List.of(new SimpleGrantedAuthority("ROLE_" + user.getTipo().name().toLowerCase()));
+				try
+				{
+					String subject = jwtTokenProvider.getSubjectFromToken(token);
+					user = userRepository.findByUsuario(subject).get();
+				} catch (JWTVerificationException ex)
+				{
+					response.setStatus(HttpStatus.UNAUTHORIZED.value());
+					response.setContentType("application/json");
+					response.getWriter().write(String.format("{\"error\": \"%s\", \"status\": %d}", ex.getMessage(),
+							HttpStatus.UNAUTHORIZED.value()));
+					return;
+				}
+
+				List<SimpleGrantedAuthority> roles = List
+						.of(new SimpleGrantedAuthority("ROLE_" + user.getTipo().name().toLowerCase()));
 
 				Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsuario(), null, roles);
 

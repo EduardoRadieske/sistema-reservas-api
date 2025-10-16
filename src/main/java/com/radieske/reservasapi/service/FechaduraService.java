@@ -11,9 +11,9 @@ public interface FechaduraService
 
 	List<Fechadura> findAll();
 
-	Optional<Fechadura> findById(Long id);
+	Optional<Fechadura> findById(Integer id);
 
 	Fechadura update(Fechadura fechadura);
 
-	void deleteById(Long id);
+	void deleteById(Integer id);
 }

@@ -9,7 +9,7 @@ public class IntegrationFactory
 	{
 		switch (provedor.getProvedor())
 		{
-		case 1:
+		case "1":
 			return new Tuya(provedor);
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + provedor.getProvedor());

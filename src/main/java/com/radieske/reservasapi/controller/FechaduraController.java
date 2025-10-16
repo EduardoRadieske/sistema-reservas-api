@@ -34,7 +34,7 @@ public class FechaduraController
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Optional<Fechadura>> findById(@PathVariable Long id)
+	public ResponseEntity<Optional<Fechadura>> findById(@PathVariable Integer id)
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(fechaduraService.findById(id));
 	}
@@ -52,7 +52,7 @@ public class FechaduraController
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> delete(@PathVariable Long id)
+	public ResponseEntity<?> delete(@PathVariable Integer id)
 	{
 		fechaduraService.deleteById(id);
 		return ResponseEntity.status(HttpStatus.OK).build();

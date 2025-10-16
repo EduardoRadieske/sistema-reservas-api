@@ -22,8 +22,8 @@ public class Provedor
 	@Column(name = "id_provedor")
 	private Integer idProvedor;
 
-	@Column(name = "provedor")
-	private Integer provedor;
+	@Column(name = "provedor", length = 10)
+	private String provedor;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status")

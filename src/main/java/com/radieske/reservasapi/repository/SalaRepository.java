@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.radieske.reservasapi.model.Sala;
 
-public interface SalaRepository extends JpaRepository<Sala, Long>
+public interface SalaRepository extends JpaRepository<Sala, Integer>
 {
-
+	
 }

@@ -1,20 +1,20 @@
 package com.radieske.reservasapi.service;
 
 import java.util.List;
-import java.util.Optional;
 
+import com.radieske.reservasapi.dto.SenhaTempDTO;
 import com.radieske.reservasapi.model.Reserva;
 import com.radieske.reservasapi.model.SenhaTemporaria;
 
 public interface SenhaTemporariaService
 {
-	SenhaTemporaria save(SenhaTemporaria senha);
+	SenhaTempDTO save(SenhaTemporaria senha);
 
-	List<SenhaTemporaria> findAll();
+	List<SenhaTempDTO> findAll();
 
-	Optional<SenhaTemporaria> findById(Long id);
+	SenhaTempDTO findByIdReserva(Integer id);
 
-	SenhaTemporaria update(SenhaTemporaria senha);
+	SenhaTempDTO update(SenhaTemporaria senha);
 
 	void deleteById(Long id);
 	

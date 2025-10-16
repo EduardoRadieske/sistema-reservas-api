@@ -11,9 +11,9 @@ public interface ProvedorService
 
 	List<Provedor> findAll();
 
-	Optional<Provedor> findById(Long id);
+	Optional<Provedor> findById(Integer id);
 
 	Provedor update(Provedor provedor);
 
-	void deleteById(Long id);
+	void deleteById(Integer id);
 }

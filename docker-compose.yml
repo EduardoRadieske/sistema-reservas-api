@@ -1,0 +1,17 @@
+services:
+	db-tfc:
+	    image: postgres:15
+	    container_name: db-tfc
+	    restart: always
+	   # network_mode: "host"
+	    environment:
+	      POSTGRES_USER: postgres
+	      POSTGRES_PASSWORD: postgres123
+	      POSTGRES_DB: db_tfc
+	    ports:
+	      - "5432:5432"
+	    volumes:
+	      # volume de dados persistentes
+	      - ./data:/var/lib/postgresql/data
+	      # script init
+	      # - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro

@@ -1,11 +1,11 @@
 package com.radieske.reservasapi.service.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.radieske.reservasapi.dto.SenhaTempDTO;
 import com.radieske.reservasapi.integration.ProcessIntegration;
 import com.radieske.reservasapi.model.Reserva;
 import com.radieske.reservasapi.model.SenhaTemporaria;
@@ -20,27 +20,32 @@ public class SenhaTemporariaServiceImpl implements SenhaTemporariaService
 	private SenhaTemporariaRepository senhaRepository;
 
 	@Override
-	public SenhaTemporaria save(SenhaTemporaria reserva)
+	public SenhaTempDTO save(SenhaTemporaria reserva)
 	{
-		return senhaRepository.save(reserva);
+		return SenhaTempDTO.fromEntity(senhaRepository.save(reserva));
 	}
 
 	@Override
-	public List<SenhaTemporaria> findAll()
+	public List<SenhaTempDTO> findAll()
 	{
-		return senhaRepository.findAll();
+		return senhaRepository.findAll()
+				.stream()
+				.map(SenhaTempDTO::fromEntity).toList();
 	}
 
 	@Override
-	public Optional<SenhaTemporaria> findById(Long id)
+	public SenhaTempDTO findByIdReserva(Integer id)
 	{
-		return senhaRepository.findById(id);
+		SenhaTemporaria senha = senhaRepository.findByIdReserva(id)
+				.orElseThrow(() -> new RuntimeException("Reserva não encontrada."));
+		
+		return SenhaTempDTO.fromEntity(senha);
 	}
 
 	@Override
-	public SenhaTemporaria update(SenhaTemporaria reserva)
+	public SenhaTempDTO update(SenhaTemporaria reserva)
 	{
-		return senhaRepository.save(reserva);
+		return SenhaTempDTO.fromEntity(senhaRepository.save(reserva));
 	}
 
 	@Override
@@ -48,22 +53,22 @@ public class SenhaTemporariaServiceImpl implements SenhaTemporariaService
 	{
 		senhaRepository.deleteById(id);
 	}
-	
+
 	@Override
-	public SenhaTemporaria generatePasswordForReservation(Reserva reserva) 
+	public SenhaTemporaria generatePasswordForReservation(Reserva reserva)
 	{
 		// Gera PIN aleatório de 6 dígitos
-        String pin = PasswordGenerator.generateRandomDigits();
+		String pin = PasswordGenerator.generateRandomDigits();
 
-        SenhaTemporaria senha = new SenhaTemporaria();
-        senha.setReserva(reserva);
-        senha.setCodigo(pin);
-        
-        senha = senhaRepository.save(senha);
-        
-        // Disparar o fluxo de automação da APIs
-        ProcessIntegration.processAutomation(senha); 
-        
-        return senha;
-    }
+		SenhaTemporaria senha = new SenhaTemporaria();
+		senha.setReserva(reserva);
+		senha.setCodigo(pin);
+
+		senha = senhaRepository.save(senha);
+
+		// Disparar o fluxo de automação da APIs
+		ProcessIntegration.processAutomation(senha);
+
+		return senha;
+	}
 }

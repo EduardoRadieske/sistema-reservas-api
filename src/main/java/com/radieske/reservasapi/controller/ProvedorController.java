@@ -34,7 +34,7 @@ public class ProvedorController
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Optional<Provedor>> findById(@PathVariable Long id)
+	public ResponseEntity<Optional<Provedor>> findById(@PathVariable Integer id)
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(provedorService.findById(id));
 	}
@@ -52,7 +52,7 @@ public class ProvedorController
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> delete(@PathVariable Long id)
+	public ResponseEntity<?> delete(@PathVariable Integer id)
 	{
 		provedorService.deleteById(id);
 		return ResponseEntity.status(HttpStatus.OK).build();
