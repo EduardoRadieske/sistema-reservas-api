@@ -27,7 +27,7 @@ public class Provedor
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
-	private Status status;
+	private Status status = Status.S;
 
 	@Column(name = "client_id", length = 500)
 	private String clientId;
