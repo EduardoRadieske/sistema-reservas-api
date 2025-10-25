@@ -25,7 +25,7 @@ public class Tuya implements Integration
 		
 		// TODO implements methods
 		
-		auth.getToken();
+		String tokenTeste = auth.getToken();
 		
 		provedor.getSecret();
 		

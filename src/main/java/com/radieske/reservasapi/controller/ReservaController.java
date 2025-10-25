@@ -37,7 +37,7 @@ public class ReservaController
 
 	@GetMapping
 	public ResponseEntity<List<ReservaDTO>> findActive()
-	{
+	{	
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(reservaService.findActive(authUserService.getAuthenticatedUser()));
 	}
