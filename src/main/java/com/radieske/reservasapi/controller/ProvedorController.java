@@ -31,17 +31,6 @@ public class ProvedorController
 	@GetMapping
 	public ResponseEntity<List<Provedor>> findAll()
 	{
-		// TODO - PARA TESTES
-		try 
-		{
-			Provedor prov = provedorService.findById(3).get();
-			
-			new Tuya(prov);
-		} catch(Exception ex) {
-			System.err.println("Erro ao autenticar Tuya: " + ex.getMessage());
-		}
-		
-		
 		return ResponseEntity.status(HttpStatus.OK).body(provedorService.findAll());
 	}
 
