@@ -1,5 +1,7 @@
 package com.radieske.reservasapi.integration;
 
+import java.util.Objects;
+
 import org.springframework.scheduling.annotation.Async;
 
 import com.radieske.reservasapi.model.Fechadura;
@@ -18,6 +20,12 @@ public class ProcessIntegration
 		Provedor provedor = fechadura.getProvedor();
 		
 		Integration integracao = IntegrationFactory.getIntegration(provedor);
+		
+		if (Objects.isNull(provedor.getSecret()) || Objects.isNull(provedor.getClientId()))
+		{
+			return;
+		}
+		
 		integracao.registerPassword(senha);
 	}
 

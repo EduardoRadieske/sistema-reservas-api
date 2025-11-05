@@ -7,6 +7,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.json.JSONObject;
@@ -76,11 +77,12 @@ public class AuthTuya
 				}
 			} else
 			{
-				System.err.println("Erro HTTP: " + response.statusCode());
-				System.err.println("Body: " + response.body());
+				System.err.println("Erro Tuya HTTP: " + response.statusCode() 
+					+ "\nBody: " + response.body());
 			}
 
-		} catch (Exception e)
+		} 
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
