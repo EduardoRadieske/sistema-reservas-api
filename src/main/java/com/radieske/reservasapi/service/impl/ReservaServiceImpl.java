@@ -45,6 +45,25 @@ public class ReservaServiceImpl implements ReservaService
         
 		return ReservaDTO.fromEntity(novaReserva);
 	}
+	
+	private void validateReserva(Reserva reserva) 
+	{
+	    Usuario usuario = usuarioRepository.findById(reserva.getUsuario().getIdUsuario())
+	            .orElseThrow(() -> new RuntimeException("Usuário " + reserva.getUsuario().getIdUsuario() + " não encontrado"));
+	    
+	    Sala sala = salaRepository.findById(reserva.getSala().getIdSala())
+	            .orElseThrow(() -> new RuntimeException("Sala " + reserva.getSala().getIdSala() + " não encontrada"));
+
+	    reserva.setUsuario(usuario);
+	    reserva.setSala(sala);
+	    
+		Optional<Reserva> tempReserva = reservaRepository.findByBetweenDate(reserva.getSala().getIdSala(), reserva.getDataReservaInicial(), reserva.getDataReservaFinal());
+		
+		if (tempReserva.isPresent())
+		{
+			throw new RuntimeException("Já existe uma reserva para este horário!");
+		}
+	}
 
 	@Override
 	public List<ReservaDTO> findAll()
@@ -97,24 +116,5 @@ public class ReservaServiceImpl implements ReservaService
 		}
 		
 		return listaReservas;
-	}
-	
-	private void validateReserva(Reserva reserva) 
-	{
-	    Usuario usuario = usuarioRepository.findById(reserva.getUsuario().getIdUsuario())
-	            .orElseThrow(() -> new RuntimeException("Usuário " + reserva.getUsuario().getIdUsuario() + " não encontrado"));
-	    
-	    Sala sala = salaRepository.findById(reserva.getSala().getIdSala())
-	            .orElseThrow(() -> new RuntimeException("Sala " + reserva.getSala().getIdSala() + " não encontrada"));
-
-	    reserva.setUsuario(usuario);
-	    reserva.setSala(sala);
-	    
-		Optional<Reserva> tempReserva = reservaRepository.findByBetweenDate(reserva.getSala().getIdSala(), reserva.getDataReservaInicial(), reserva.getDataReservaFinal());
-		
-		if (tempReserva.isPresent())
-		{
-			throw new RuntimeException("Já existe uma reserva para este horário!");
-		}
 	}
 }
