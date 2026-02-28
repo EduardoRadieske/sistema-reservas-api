@@ -7,7 +7,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.HashMap;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.json.JSONObject;
@@ -15,6 +15,9 @@ import org.json.JSONObject;
 import com.radieske.reservasapi.model.Provedor;
 import com.radieske.reservasapi.util.Criptografia;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 public class AuthTuya
 {
 
@@ -23,7 +26,7 @@ public class AuthTuya
 	private final String URL_API = "https://openapi.tuyaus.com/v1.0/token?grant_type=1";
 
 	private final Provedor provedor;
-	private String token;
+	private Optional<String> token;
 
 	public AuthTuya(Provedor provedor)
 	{
@@ -33,10 +36,13 @@ public class AuthTuya
 
 	public String getToken()
 	{
-		return token;
+		if (!token.isPresent()) 
+			throw new RuntimeException("Não foi possível obter o token Tuya!");
+		
+		return token.get();
 	}
 
-	private String requestToken()
+	private Optional<String> requestToken()
 	{
 		try
 		{
@@ -69,23 +75,21 @@ public class AuthTuya
 				if (json.getBoolean("success"))
 				{
 					String accessToken = json.getJSONObject("result").getString("access_token");
-					System.out.println("✅ Token Tuya obtido com sucesso: " + accessToken);
-					return accessToken;
-				} else
-				{
-					System.err.println("Erro Tuya: " + json.toString());
+					log.info("Token Tuya obtido com sucesso: " + accessToken);
+					return Optional.of(accessToken);
 				}
-			} else
-			{
-				System.err.println("Erro Tuya HTTP: " + response.statusCode() 
-					+ "\nBody: " + response.body());
+				
+				log.error("Erro Tuya API: {}", json.toString());
+				return Optional.empty();
 			}
-
+			
+			log.error("Erro Tuya HTTP: {} \nBody: {}", 
+					response.statusCode(), response.body());
 		} 
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			log.error("Erro AuthTuya: {}", e.getMessage(), e);
 		}
-		return null;
+		return Optional.empty();
 	}
 }
