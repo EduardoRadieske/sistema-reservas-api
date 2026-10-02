@@ -2,6 +2,7 @@ package com.radieske.reservasapi.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.radieske.reservasapi.enums.TipoUsuario;
 
 import jakarta.persistence.Column;
@@ -30,6 +31,7 @@ public class Usuario
 	@Column(name = "usuario", length = 100, nullable = false, unique = true)
 	private String usuario;
 
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@Column(name = "senha_hash", length = 1000, nullable = false)
 	private String senhaHash;
 

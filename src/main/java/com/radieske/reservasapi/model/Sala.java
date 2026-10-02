@@ -27,6 +27,6 @@ public class Sala
 	private String descricao;
 	
 	@ManyToOne
-    @JoinColumn(name = "id_fechadura", nullable = false)
-    private Fechadura fechadura;
+  @JoinColumn(name = "id_fechadura", nullable = false)
+  private Fechadura fechadura;
 }

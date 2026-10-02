@@ -19,7 +19,7 @@ import lombok.Data;
 @Table(name = "senhas_temporarias")
 public class SenhaTemporaria
 {
-	@Id
+		@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_senha")
     private Integer idSenha;

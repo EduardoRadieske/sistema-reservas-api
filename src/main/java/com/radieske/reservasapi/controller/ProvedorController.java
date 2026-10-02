@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.radieske.reservasapi.integration.tuya.Tuya;
 import com.radieske.reservasapi.model.Provedor;
 import com.radieske.reservasapi.service.ProvedorService;
 

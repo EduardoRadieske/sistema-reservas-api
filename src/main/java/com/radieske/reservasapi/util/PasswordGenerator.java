@@ -1,12 +1,13 @@
 package com.radieske.reservasapi.util;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 public class PasswordGenerator
 {
+	private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
 	public static String generateRandomDigits()
 	{
-		Random random = new Random();
-        return String.format("%06d", random.nextInt(1_000_000));
+		return String.format("%06d", SECURE_RANDOM.nextInt(1_000_000));
 	}
 }

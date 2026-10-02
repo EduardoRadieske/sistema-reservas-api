@@ -15,7 +15,7 @@ import lombok.Data;
 @Table(name = "fechaduras")
 public class Fechadura
 {
-	@Id
+		@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_fechadura")
     private Integer idFechadura;
