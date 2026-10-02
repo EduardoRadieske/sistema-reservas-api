@@ -21,12 +21,12 @@ import lombok.Data;
 @Table(name = "reservas")
 public class Reserva
 {
-	@Id
+		@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_reserva")
     private Integer idReserva;
 
-	@ManyToOne
+		@ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 

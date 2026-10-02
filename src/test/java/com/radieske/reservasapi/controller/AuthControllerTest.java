@@ -1,12 +1,12 @@
 package com.radieske.reservasapi.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,19 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.radieske.reservasapi.dto.LoginData;
-import com.radieske.reservasapi.enums.TipoUsuario;
-import com.radieske.reservasapi.model.Usuario;
-import com.radieske.reservasapi.repository.UsuarioRepository;
-import com.radieske.reservasapi.security.JwtTokenProvider;
+import com.radieske.reservasapi.dto.LoginResponseDTO;
+import com.radieske.reservasapi.service.AuthService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -39,34 +34,19 @@ public class AuthControllerTest
 	private ObjectMapper objectMapper;
 
 	@MockitoBean
-	private AuthenticationManager authenticationManager;
-
-	@MockitoBean
-	private JwtTokenProvider jwtTokenProvider;
-
-	@MockitoBean
-	private UsuarioRepository userRepository;
+	private AuthService authService;
 
 	@Test
-	@DisplayName("Deve realizar login com sucesso e retornar token Bearer e expiresIn")
+	@DisplayName("Deve delegar ao AuthService e retornar 200 OK com LoginResponseDTO")
 	void shouldLoginSuccessfully() throws Exception
 	{
 		LoginData loginData = new LoginData();
 		loginData.setUsuario("usuario.teste");
 		loginData.setSenha("senha123");
 
-		Usuario usuario = new Usuario();
-		usuario.setIdUsuario(1);
-		usuario.setUsuario("usuario.teste");
-		usuario.setTipo(TipoUsuario.comum);
+		LoginResponseDTO responseDTO = new LoginResponseDTO("mocked-jwt-token", "Bearer", 3600L);
 
-		Authentication authResult = new UsernamePasswordAuthenticationToken("usuario.teste", null);
-
-		when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-				.thenReturn(authResult);
-		when(userRepository.findByUsuario("usuario.teste")).thenReturn(Optional.of(usuario));
-		when(jwtTokenProvider.generateToken(usuario)).thenReturn("mocked-jwt-token");
-		when(jwtTokenProvider.getValidityInSeconds()).thenReturn(3600L);
+		when(authService.login(any(LoginData.class))).thenReturn(responseDTO);
 
 		mockMvc.perform(post("/auth/login")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -75,18 +55,20 @@ public class AuthControllerTest
 				.andExpect(jsonPath("$.token").value("mocked-jwt-token"))
 				.andExpect(jsonPath("$.type").value("Bearer"))
 				.andExpect(jsonPath("$.expiresIn").value(3600));
+
+		verify(authService).login(any(LoginData.class));
 	}
 
 	@Test
-	@DisplayName("Deve retornar 401 com mensagem unificada quando a senha estiver incorreta")
-	void shouldReturn401WhenPasswordIsIncorrect() throws Exception
+	@DisplayName("Deve retornar 401 Unauthorized quando AuthService lançar BadCredentialsException")
+	void shouldReturn401WhenAuthServiceThrowsBadCredentials() throws Exception
 	{
 		LoginData loginData = new LoginData();
 		loginData.setUsuario("usuario.teste");
 		loginData.setSenha("senha_errada");
 
-		when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-				.thenThrow(new BadCredentialsException("Bad credentials"));
+		when(authService.login(any(LoginData.class)))
+				.thenThrow(new BadCredentialsException("Usuário ou senha inválidos"));
 
 		mockMvc.perform(post("/auth/login")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -94,29 +76,12 @@ public class AuthControllerTest
 				.andExpect(status().isUnauthorized())
 				.andExpect(jsonPath("$.status").value(401))
 				.andExpect(jsonPath("$.error").value("Usuário ou senha inválidos"));
+
+		verify(authService).login(any(LoginData.class));
 	}
 
 	@Test
-	@DisplayName("Deve retornar 401 com a MESMA mensagem unificada quando usuário não existir (anti-enumeração)")
-	void shouldReturn401WhenUserDoesNotExistWithoutEnumeration() throws Exception
-	{
-		LoginData loginData = new LoginData();
-		loginData.setUsuario("usuario_inexistente");
-		loginData.setSenha("qualquer_senha");
-
-		when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
-				.thenThrow(new BadCredentialsException("Bad credentials"));
-
-		mockMvc.perform(post("/auth/login")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(loginData)))
-				.andExpect(status().isUnauthorized())
-				.andExpect(jsonPath("$.status").value(401))
-				.andExpect(jsonPath("$.error").value("Usuário ou senha inválidos"));
-	}
-
-	@Test
-	@DisplayName("Deve retornar 400 Bad Request quando usuário não for informado")
+	@DisplayName("Deve retornar 400 Bad Request e NÃO chamar AuthService quando 'usuario' for em branco")
 	void shouldReturn400WhenUsuarioIsBlank() throws Exception
 	{
 		LoginData loginData = new LoginData();
@@ -129,10 +94,12 @@ public class AuthControllerTest
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.status").value(400))
 				.andExpect(jsonPath("$.error").value("O campo 'usuario' é obrigatório"));
+
+		verify(authService, never()).login(any());
 	}
 
 	@Test
-	@DisplayName("Deve retornar 400 Bad Request quando senha não for informada")
+	@DisplayName("Deve retornar 400 Bad Request e NÃO chamar AuthService quando 'senha' for em branco")
 	void shouldReturn400WhenSenhaIsBlank() throws Exception
 	{
 		LoginData loginData = new LoginData();
@@ -145,5 +112,7 @@ public class AuthControllerTest
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.status").value(400))
 				.andExpect(jsonPath("$.error").value("O campo 'senha' é obrigatório"));
+
+		verify(authService, never()).login(any());
 	}
 }
