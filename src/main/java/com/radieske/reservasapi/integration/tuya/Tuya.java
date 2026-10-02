@@ -1,6 +1,5 @@
 package com.radieske.reservasapi.integration.tuya;
 
-import java.awt.datatransfer.StringSelection;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
@@ -11,7 +10,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.json.JSONObject;

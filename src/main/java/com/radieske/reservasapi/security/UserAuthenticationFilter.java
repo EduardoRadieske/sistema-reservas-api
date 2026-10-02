@@ -1,11 +1,9 @@
 package com.radieske.reservasapi.security;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,8 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.radieske.reservasapi.config.SecurityConfig;
-import com.radieske.reservasapi.model.Usuario;
 import com.radieske.reservasapi.repository.UsuarioRepository;
 
 import jakarta.servlet.FilterChain;
@@ -36,53 +32,41 @@ public class UserAuthenticationFilter extends OncePerRequestFilter
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException
 	{
-		if (checkIfEndpointIsNotPublic(request))
+		String token = recoveryToken(request);
+
+		if (token != null)
 		{
-			String token = recoveryToken(request);
-			if (token != null)
+			try
 			{
-				Usuario user;
-				
-				try
+				String subject = jwtTokenProvider.getSubjectFromToken(token);
+				if (subject != null && SecurityContextHolder.getContext().getAuthentication() == null)
 				{
-					String subject = jwtTokenProvider.getSubjectFromToken(token);
-					user = userRepository.findByUsuario(subject).get();
-				} catch (JWTVerificationException ex)
-				{
-					response.setStatus(HttpStatus.UNAUTHORIZED.value());
-					response.setContentType("application/json");
-					response.getWriter().write(String.format("{\"error\": \"%s\", \"status\": %d}", ex.getMessage(),
-							HttpStatus.UNAUTHORIZED.value()));
-					return;
+					userRepository.findByUsuario(subject).ifPresent(user -> {
+						String roleName = user.getTipo() != null ? user.getTipo().name().toLowerCase() : "comum";
+						List<SimpleGrantedAuthority> authorities = List
+								.of(new SimpleGrantedAuthority("ROLE_" + roleName));
+
+						Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsuario(), null,
+								authorities);
+						SecurityContextHolder.getContext().setAuthentication(authentication);
+					});
 				}
-
-				List<SimpleGrantedAuthority> roles = List
-						.of(new SimpleGrantedAuthority("ROLE_" + user.getTipo().name().toLowerCase()));
-
-				Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsuario(), null, roles);
-
-				SecurityContextHolder.getContext().setAuthentication(authentication);
-			} else
+			} catch (JWTVerificationException ex)
 			{
-				throw new RuntimeException("O token está ausente.");
+				SecurityContextHolder.clearContext();
 			}
 		}
+
 		filterChain.doFilter(request, response);
 	}
 
 	private String recoveryToken(HttpServletRequest request)
 	{
 		String authorizationHeader = request.getHeader("Authorization");
-		if (authorizationHeader != null)
+		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer "))
 		{
-			return authorizationHeader.replace("Bearer ", "");
+			return authorizationHeader.substring(7).trim();
 		}
 		return null;
-	}
-
-	private boolean checkIfEndpointIsNotPublic(HttpServletRequest request)
-	{
-		String requestURI = request.getRequestURI();
-		return !Arrays.asList(SecurityConfig.ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED).contains(requestURI);
 	}
 }
