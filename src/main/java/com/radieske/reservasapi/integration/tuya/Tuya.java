@@ -44,10 +44,8 @@ public class Tuya implements Integration
 			
 		try 
 		{
-			String strTicket = sendPost("/v1.0/devices/" + fechadura.getChaveDispositivo() 
+			JSONObject jsonTicket = sendPost("/v1.0/devices/" + fechadura.getChaveDispositivo() 
 				+ "/door-lock/password-ticket", "{}");
-			
-			JSONObject jsonTicket = new JSONObject(strTicket);
 			
 			String passwordEncrypted = PasswordEncryptUtil.encryptPassword(senha.getCodigo(), provedor.getSecret(), jsonTicket.getString("ticket_key"));
 			
@@ -69,16 +67,17 @@ public class Tuya implements Integration
 	        sendPost("/v1.0/devices/" + fechadura.getChaveDispositivo() 
 				+ "/door-lock/temp-password", tempPassword.toString());
 		} 
-		catch (RuntimeException ex) {
+		catch (RuntimeException ex)
+		{
 			throw ex;
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			throw new IllegalStateException("Falha ao comunicar com a Tuya: " + e.getMessage(), e);
 		}
 	}
 	
-	private String sendPost(String endpoint, String body) throws Exception
+	private JSONObject sendPost(String endpoint, String body) throws Exception
 	{
 		String ak = provedor.getClientId();
 		String sk = provedor.getSecret();
@@ -87,7 +86,6 @@ public class Tuya implements Integration
 		String nonce = UUID.randomUUID().toString().replace("-", "");
 		
 		String urlRequest = URL_API + endpoint;
-		System.out.println(body);
 		String stringToSign = ak + auth.getToken() + t + nonce + CriptoTuya.buildStringToSign("POST", new URL(urlRequest), body.getBytes(), new HashMap<>());
 		String sign = Criptografia.signHmacSHA256(stringToSign, sk);
 		
@@ -106,22 +104,18 @@ public class Tuya implements Integration
 		HttpClient client = HttpClient.newHttpClient();
 		HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-		if (response.statusCode() == 200)
+		if (response.statusCode() != 200)
 		{
-			JSONObject json = new JSONObject(response.body());
-			if (json.getBoolean("success"))
-			{
-				return json.getJSONObject("result").toString();
-			} else
-			{
-				System.err.println("Erro Tuya: " + json.toString());
-			}
+			throw new IllegalStateException("Tuya respondeu HTTP " + response.statusCode() + ".");
 		} else
 		{
-			System.err.println("Erro Tuya HTTP: " + response.statusCode() 
-				+ "\nBody: " + response.body());
+			JSONObject json = new JSONObject(response.body());
+			if (!json.optBoolean("success", false))
+			{
+				throw new IllegalStateException("Tuya recusou a operação: "
+						+ json.optString("msg", "resposta sem mensagem de erro") + ".");
+			}
+			return json.getJSONObject("result");
 		}
-		
-		return null;
 	}
 }

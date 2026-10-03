@@ -19,6 +19,9 @@ public class SenhaTemporariaServiceImpl implements SenhaTemporariaService
 	@Autowired
 	private SenhaTemporariaRepository senhaRepository;
 
+	@Autowired
+	private ProcessIntegration processIntegration;
+
 	@Override
 	public SenhaTempDTO save(SenhaTemporaria reserva)
 	{
@@ -66,8 +69,7 @@ public class SenhaTemporariaServiceImpl implements SenhaTemporariaService
 
 		senha = senhaRepository.save(senha);
 
-		// Disparar o fluxo de automação da APIs
-		ProcessIntegration.processAutomation(senha);
+		processIntegration.processAutomation(senha.getIdSenha());
 
 		return senha;
 	}

@@ -28,7 +28,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.radieske.reservasapi.dto.ReservaDTO;
 import com.radieske.reservasapi.dto.ReservaRequestDTO;
+import com.radieske.reservasapi.dto.SenhaTempDTO;
 import com.radieske.reservasapi.enums.Status;
+import com.radieske.reservasapi.enums.StatusIntegracao;
 import com.radieske.reservasapi.model.Usuario;
 import com.radieske.reservasapi.service.AuthenticatedUserService;
 import com.radieske.reservasapi.service.ReservaService;
@@ -77,6 +79,22 @@ class ReservaControllerTest
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.idReserva").value(10))
 				.andExpect(jsonPath("$.dataReservaInicial").value("2026-10-02T14:00"));
+	}
+
+	@Test
+	@DisplayName("Deve retornar a senha e o resultado da integração")
+	void shouldReturnPasswordAndIntegrationResult() throws Exception
+	{
+		when(senhaService.findByIdReserva(10)).thenReturn(
+				new SenhaTempDTO(20, 10, "123456", StatusIntegracao.ERRO, "Falha Tuya"));
+
+		mockMvc.perform(get("/reservas/10/senha"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").value(20))
+				.andExpect(jsonPath("$.idReserva").value(10))
+				.andExpect(jsonPath("$.codigo").value("123456"))
+				.andExpect(jsonPath("$.statusIntegracao").value("ERRO"))
+				.andExpect(jsonPath("$.mensagemIntegracao").value("Falha Tuya"));
 	}
 
 	@Test

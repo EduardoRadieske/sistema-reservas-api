@@ -1,6 +1,7 @@
 package com.radieske.reservasapi.model;
 
 import com.radieske.reservasapi.enums.Status;
+import com.radieske.reservasapi.enums.StatusIntegracao;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,4 +35,11 @@ public class SenhaTemporaria
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_integracao", length = 20)
+    private StatusIntegracao statusIntegracao = StatusIntegracao.PENDENTE;
+
+    @Column(name = "mensagem_integracao", length = 1000)
+    private String mensagemIntegracao = "Aguardando provisionamento na fechadura.";
 }
