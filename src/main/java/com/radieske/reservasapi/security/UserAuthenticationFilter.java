@@ -29,8 +29,7 @@ public class UserAuthenticationFilter extends OncePerRequestFilter
 	private UsuarioRepository userRepository;
 
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException
 	{
 		String token = recoveryToken(request);
 
@@ -43,8 +42,7 @@ public class UserAuthenticationFilter extends OncePerRequestFilter
 				{
 					userRepository.findByUsuario(subject).ifPresent(user -> {
 						String roleName = user.getTipo() != null ? user.getTipo().name().toLowerCase() : "comum";
-						List<SimpleGrantedAuthority> authorities = List
-								.of(new SimpleGrantedAuthority("ROLE_" + roleName));
+						List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + roleName));
 
 						Authentication authentication = new UsernamePasswordAuthenticationToken(user.getUsuario(), null,
 								authorities);
