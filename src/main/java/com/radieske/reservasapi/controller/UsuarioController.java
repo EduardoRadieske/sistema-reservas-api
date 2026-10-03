@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.radieske.reservasapi.model.Usuario;
+import com.radieske.reservasapi.dto.UsuarioRequestDTO;
+import com.radieske.reservasapi.dto.UsuarioResponseDTO;
 import com.radieske.reservasapi.service.UsuarioService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("usuarios")
@@ -29,27 +32,27 @@ public class UsuarioController
 	private UsuarioService usuarioService;
 
 	@GetMapping
-	public ResponseEntity<List<Usuario>> findAll()
+	public ResponseEntity<List<UsuarioResponseDTO>> findAll()
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(usuarioService.findAll());
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Optional<Usuario>> findById(@PathVariable Integer id)
+	public ResponseEntity<Optional<UsuarioResponseDTO>> findById(@PathVariable Integer id)
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(usuarioService.findById(id));
 	}
 
 	@PostMapping
-	public ResponseEntity<Usuario> create(@RequestBody Usuario usuario)
+	public ResponseEntity<UsuarioResponseDTO> create(@RequestBody @Valid UsuarioRequestDTO request)
 	{
-		return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.save(usuario));
+		return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.save(request));
 	}
 
 	@PutMapping
-	public ResponseEntity<Usuario> update(@RequestBody Usuario usuario)
+	public ResponseEntity<UsuarioResponseDTO> update(@RequestBody @Valid UsuarioRequestDTO request)
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(usuarioService.update(usuario));
+		return ResponseEntity.status(HttpStatus.OK).body(usuarioService.update(request));
 	}
 
 	@DeleteMapping("/{id}")

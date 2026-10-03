@@ -1,7 +1,6 @@
 package com.radieske.reservasapi.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.radieske.reservasapi.model.Fechadura;
+import com.radieske.reservasapi.dto.FechaduraRequestDTO;
+import com.radieske.reservasapi.dto.FechaduraResponseDTO;
 import com.radieske.reservasapi.service.FechaduraService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("fechaduras")
@@ -28,27 +30,27 @@ public class FechaduraController
 	private FechaduraService fechaduraService;
 	
 	@GetMapping
-	public ResponseEntity<List<Fechadura>> findAll()
+	public ResponseEntity<List<FechaduraResponseDTO>> findAll()
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(fechaduraService.findAll());
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Optional<Fechadura>> findById(@PathVariable Integer id)
+	public ResponseEntity<FechaduraResponseDTO> findById(@PathVariable Integer id)
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(fechaduraService.findById(id));
+		return ResponseEntity.of(fechaduraService.findById(id));
 	}
 
 	@PostMapping
-	public ResponseEntity<Fechadura> create(@RequestBody Fechadura usuario)
+	public ResponseEntity<FechaduraResponseDTO> create(@Valid @RequestBody FechaduraRequestDTO request)
 	{
-		return ResponseEntity.status(HttpStatus.CREATED).body(fechaduraService.save(usuario));
+		return ResponseEntity.status(HttpStatus.CREATED).body(fechaduraService.save(request));
 	}
 
 	@PutMapping
-	public ResponseEntity<Fechadura> update(@RequestBody Fechadura usuario)
+	public ResponseEntity<FechaduraResponseDTO> update(@Valid @RequestBody FechaduraRequestDTO request)
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(fechaduraService.update(usuario));
+		return ResponseEntity.status(HttpStatus.OK).body(fechaduraService.update(request));
 	}
 
 	@DeleteMapping("/{id}")

@@ -1,7 +1,6 @@
 package com.radieske.reservasapi.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.radieske.reservasapi.model.Provedor;
+import com.radieske.reservasapi.dto.ProvedorRequestDTO;
+import com.radieske.reservasapi.dto.ProvedorResponseDTO;
 import com.radieske.reservasapi.service.ProvedorService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("provedor")
@@ -28,27 +30,27 @@ public class ProvedorController
 	private ProvedorService provedorService;
 
 	@GetMapping
-	public ResponseEntity<List<Provedor>> findAll()
+	public ResponseEntity<List<ProvedorResponseDTO>> findAll()
 	{
 		return ResponseEntity.status(HttpStatus.OK).body(provedorService.findAll());
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Optional<Provedor>> findById(@PathVariable Integer id)
+	public ResponseEntity<ProvedorResponseDTO> findById(@PathVariable Integer id)
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(provedorService.findById(id));
+		return ResponseEntity.of(provedorService.findById(id));
 	}
 
 	@PostMapping
-	public ResponseEntity<Provedor> create(@RequestBody Provedor usuario)
+	public ResponseEntity<ProvedorResponseDTO> create(@Valid @RequestBody ProvedorRequestDTO provedor)
 	{
-		return ResponseEntity.status(HttpStatus.CREATED).body(provedorService.save(usuario));
+		return ResponseEntity.status(HttpStatus.CREATED).body(provedorService.save(provedor));
 	}
 
 	@PutMapping
-	public ResponseEntity<Provedor> update(@RequestBody Provedor usuario)
+	public ResponseEntity<ProvedorResponseDTO> update(@Valid @RequestBody ProvedorRequestDTO provedor)
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(provedorService.update(usuario));
+		return ResponseEntity.status(HttpStatus.OK).body(provedorService.update(provedor));
 	}
 
 	@DeleteMapping("/{id}")

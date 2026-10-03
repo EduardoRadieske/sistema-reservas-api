@@ -1,7 +1,6 @@
 package com.radieske.reservasapi.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,11 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.radieske.reservasapi.dto.ReservaDTO;
+import com.radieske.reservasapi.dto.ReservaRequestDTO;
 import com.radieske.reservasapi.dto.SenhaTempDTO;
-import com.radieske.reservasapi.model.Reserva;
 import com.radieske.reservasapi.service.AuthenticatedUserService;
 import com.radieske.reservasapi.service.ReservaService;
 import com.radieske.reservasapi.service.SenhaTemporariaService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("reservas")
@@ -43,21 +44,21 @@ public class ReservaController
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Optional<ReservaDTO>> findById(@PathVariable Integer id)
+	public ResponseEntity<ReservaDTO> findById(@PathVariable Integer id)
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(reservaService.findById(id));
+		return ResponseEntity.of(reservaService.findById(id));
 	}
 
 	@PostMapping
-	public ResponseEntity<ReservaDTO> create(@RequestBody Reserva usuario)
+	public ResponseEntity<ReservaDTO> create(@Valid @RequestBody ReservaRequestDTO request)
 	{
-		return ResponseEntity.status(HttpStatus.CREATED).body(reservaService.save(usuario));
+		return ResponseEntity.status(HttpStatus.CREATED).body(reservaService.save(request));
 	}
 
 	@PutMapping
-	public ResponseEntity<ReservaDTO> update(@RequestBody Reserva usuario)
+	public ResponseEntity<ReservaDTO> update(@Valid @RequestBody ReservaRequestDTO request)
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(reservaService.update(usuario));
+		return ResponseEntity.status(HttpStatus.OK).body(reservaService.update(request));
 	}
 
 	@DeleteMapping("/{id}")
