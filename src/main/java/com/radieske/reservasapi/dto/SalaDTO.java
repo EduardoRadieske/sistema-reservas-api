@@ -9,6 +9,7 @@ public record SalaDTO(Integer idSala, String nome, String descricao, Integer idF
 		if (sala == null)
 			return null;
 
-		return new SalaDTO(sala.getIdSala(), sala.getNome(), sala.getDescricao(), sala.getFechadura().getIdFechadura());
+		Integer idFechadura = sala.getFechadura() != null ? sala.getFechadura().getIdFechadura() : null;
+		return new SalaDTO(sala.getIdSala(), sala.getNome(), sala.getDescricao(), idFechadura);
 	}
 }

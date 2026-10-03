@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.radieske.reservasapi.dto.FechaduraRequestDTO;
+import com.radieske.reservasapi.dto.FechaduraResponseDTO;
 import com.radieske.reservasapi.model.Fechadura;
 import com.radieske.reservasapi.model.Provedor;
 import com.radieske.reservasapi.repository.FechaduraRepository;
@@ -22,36 +24,47 @@ public class FechaduraServiceImpl implements FechaduraService
 	private ProvedorRepository provedorRepository;
 
 	@Override
-	public Fechadura save(Fechadura fechadura)
+	public FechaduraResponseDTO save(FechaduraRequestDTO request)
 	{
-		Provedor provedor = provedorRepository.findById(fechadura.getProvedor().getIdProvedor())
-	            .orElseThrow(() -> new RuntimeException("Provedor " + fechadura.getProvedor().getIdProvedor() + " não encontrado"));
-		fechadura.setProvedor(provedor);
-		
-		return fechaduraRepository.save(fechadura);
+		return FechaduraResponseDTO.fromEntity(fechaduraRepository.save(toEntity(request)));
 	}
 
 	@Override
-	public List<Fechadura> findAll()
+	public List<FechaduraResponseDTO> findAll()
 	{
-		return fechaduraRepository.findAll();
+		return fechaduraRepository.findAll().stream()
+				.map(FechaduraResponseDTO::fromEntity)
+				.toList();
 	}
 
 	@Override
-	public Optional<Fechadura> findById(Integer id)
+	public Optional<FechaduraResponseDTO> findById(Integer id)
 	{
-		return fechaduraRepository.findById(id);
+		return fechaduraRepository.findById(id).map(FechaduraResponseDTO::fromEntity);
 	}
 
 	@Override
-	public Fechadura update(Fechadura fechadura)
+	public FechaduraResponseDTO update(FechaduraRequestDTO request)
 	{
-		return fechaduraRepository.save(fechadura);
+		return FechaduraResponseDTO.fromEntity(fechaduraRepository.save(toEntity(request)));
 	}
 
 	@Override
 	public void deleteById(Integer id)
 	{
 		fechaduraRepository.deleteById(id);
+	}
+
+	private Fechadura toEntity(FechaduraRequestDTO request)
+	{
+		Integer idProvedor = request.resolvedIdProvedor();
+		Provedor provedor = provedorRepository.findById(idProvedor)
+				.orElseThrow(() -> new RuntimeException("Provedor " + idProvedor + " não encontrado"));
+
+		Fechadura fechadura = new Fechadura();
+		fechadura.setIdFechadura(request.idFechadura());
+		fechadura.setChaveDispositivo(request.chaveDispositivo());
+		fechadura.setProvedor(provedor);
+		return fechadura;
 	}
 }

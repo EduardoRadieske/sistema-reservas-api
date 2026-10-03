@@ -1,7 +1,6 @@
 package com.radieske.reservasapi.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.radieske.reservasapi.dto.SalaDTO;
-import com.radieske.reservasapi.model.Sala;
+import com.radieske.reservasapi.dto.SalaRequestDTO;
 import com.radieske.reservasapi.service.SalaService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("salas")
@@ -34,23 +35,23 @@ public class SalaController
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Optional<SalaDTO>> findById(@PathVariable Integer id)
+	public ResponseEntity<SalaDTO> findById(@PathVariable Integer id)
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(salaService.findById(id));
+		return ResponseEntity.of(salaService.findById(id));
 	}
 
 	@PostMapping
 	@PreAuthorize("hasRole('admin')")
-	public ResponseEntity<SalaDTO> create(@RequestBody Sala usuario)
+	public ResponseEntity<SalaDTO> create(@Valid @RequestBody SalaRequestDTO request)
 	{
-		return ResponseEntity.status(HttpStatus.CREATED).body(salaService.save(usuario));
+		return ResponseEntity.status(HttpStatus.CREATED).body(salaService.save(request));
 	}
 
 	@PutMapping
 	@PreAuthorize("hasRole('admin')")
-	public ResponseEntity<SalaDTO> update(@RequestBody Sala usuario)
+	public ResponseEntity<SalaDTO> update(@Valid @RequestBody SalaRequestDTO request)
 	{
-		return ResponseEntity.status(HttpStatus.OK).body(salaService.update(usuario));
+		return ResponseEntity.status(HttpStatus.OK).body(salaService.update(request));
 	}
 
 	@DeleteMapping("/{id}")

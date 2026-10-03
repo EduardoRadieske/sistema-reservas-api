@@ -28,9 +28,9 @@ public class GlobalExceptionHandler
 	public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex)
 	{
 		Map<String, Object> error = new HashMap<>();
-		String message = ex.getBindingResult().getFieldErrors().stream()
+		String message = ex.getBindingResult().getAllErrors().stream()
 				.findFirst()
-				.map(fieldError -> fieldError.getDefaultMessage())
+				.map(errorObj -> errorObj.getDefaultMessage())
 				.orElse("Erro de validação nos campos informados.");
 
 		error.put("error", message);

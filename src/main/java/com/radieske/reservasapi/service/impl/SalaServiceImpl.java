@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.radieske.reservasapi.dto.SalaDTO;
+import com.radieske.reservasapi.dto.SalaRequestDTO;
 import com.radieske.reservasapi.model.Fechadura;
 import com.radieske.reservasapi.model.Sala;
 import com.radieske.reservasapi.repository.FechaduraRepository;
@@ -23,10 +24,11 @@ public class SalaServiceImpl implements SalaService
 	private FechaduraRepository fechaduraRepository;
 
 	@Override
-	public SalaDTO save(Sala sala)
+	public SalaDTO save(SalaRequestDTO request)
 	{
-		Fechadura fechadura = fechaduraRepository.findById(sala.getFechadura().getIdFechadura())
-	            .orElseThrow(() -> new RuntimeException("Fechadura " + sala.getFechadura().getIdFechadura() + " não encontrada"));
+		Sala sala = toEntity(request);
+		Fechadura fechadura = fechaduraRepository.findById(request.resolvedIdFechadura())
+				.orElseThrow(() -> new RuntimeException("Fechadura " + request.resolvedIdFechadura() + " não encontrada"));
 		sala.setFechadura(fechadura);
 		
 		return SalaDTO.fromEntity(salaRepository.save(sala));
@@ -44,12 +46,16 @@ public class SalaServiceImpl implements SalaService
 	@Override
 	public Optional<SalaDTO> findById(Integer id)
 	{
-		return Optional.of(SalaDTO.fromEntity(salaRepository.findById(id).get()));
+		return salaRepository.findById(id).map(SalaDTO::fromEntity);
 	}
 
 	@Override
-	public SalaDTO update(Sala sala)
+	public SalaDTO update(SalaRequestDTO request)
 	{
+		Sala sala = toEntity(request);
+		Fechadura fechadura = fechaduraRepository.findById(request.resolvedIdFechadura())
+				.orElseThrow(() -> new RuntimeException("Fechadura " + request.resolvedIdFechadura() + " não encontrada"));
+		sala.setFechadura(fechadura);
 		return SalaDTO.fromEntity(salaRepository.save(sala));
 	}
 
@@ -57,5 +63,14 @@ public class SalaServiceImpl implements SalaService
 	public void deleteById(Integer id)
 	{
 		salaRepository.deleteById(id);
+	}
+
+	private Sala toEntity(SalaRequestDTO request)
+	{
+		Sala sala = new Sala();
+		sala.setIdSala(request.idSala());
+		sala.setNome(request.nome());
+		sala.setDescricao(request.descricao());
+		return sala;
 	}
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.radieske.reservasapi.dto.ReservaDTO;
+import com.radieske.reservasapi.dto.ReservaRequestDTO;
 import com.radieske.reservasapi.enums.Status;
 import com.radieske.reservasapi.model.Reserva;
 import com.radieske.reservasapi.model.Sala;
@@ -34,8 +35,9 @@ public class ReservaServiceImpl implements ReservaService
 	private SenhaTemporariaService senhaService;
 
 	@Override
-	public ReservaDTO save(Reserva reserva)
+	public ReservaDTO save(ReservaRequestDTO request)
 	{
+		Reserva reserva = toEntity(request);
 		validateReserva(reserva);
 		
 		Reserva novaReserva = reservaRepository.save(reserva);
@@ -46,23 +48,47 @@ public class ReservaServiceImpl implements ReservaService
 		return ReservaDTO.fromEntity(novaReserva);
 	}
 	
-	private void validateReserva(Reserva reserva) 
+	private void validateReserva(Reserva reserva)
 	{
-	    Usuario usuario = usuarioRepository.findById(reserva.getUsuario().getIdUsuario())
-	            .orElseThrow(() -> new RuntimeException("Usuário " + reserva.getUsuario().getIdUsuario() + " não encontrado"));
-	    
-	    Sala sala = salaRepository.findById(reserva.getSala().getIdSala())
-	            .orElseThrow(() -> new RuntimeException("Sala " + reserva.getSala().getIdSala() + " não encontrada"));
+		resolveReferences(reserva);
+		Optional<Reserva> tempReserva = reservaRepository.findByBetweenDate(
+				reserva.getSala().getIdSala(), reserva.getDataReservaInicial(), reserva.getDataReservaFinal());
 
-	    reserva.setUsuario(usuario);
-	    reserva.setSala(sala);
-	    
-		Optional<Reserva> tempReserva = reservaRepository.findByBetweenDate(reserva.getSala().getIdSala(), reserva.getDataReservaInicial(), reserva.getDataReservaFinal());
-		
 		if (tempReserva.isPresent())
 		{
 			throw new RuntimeException("Já existe uma reserva para este horário!");
 		}
+	}
+
+	private void resolveReferences(Reserva reserva)
+	{
+		Integer idUsuario = reserva.getUsuario().getIdUsuario();
+		Usuario usuario = usuarioRepository.findById(idUsuario)
+				.orElseThrow(() -> new RuntimeException("Usuário " + idUsuario + " não encontrado"));
+
+		Integer idSala = reserva.getSala().getIdSala();
+		Sala sala = salaRepository.findById(idSala)
+				.orElseThrow(() -> new RuntimeException("Sala " + idSala + " não encontrada"));
+
+		reserva.setUsuario(usuario);
+		reserva.setSala(sala);
+	}
+
+	private Reserva toEntity(ReservaRequestDTO request)
+	{
+		Usuario usuario = new Usuario();
+		usuario.setIdUsuario(request.resolvedIdUsuario());
+		Sala sala = new Sala();
+		sala.setIdSala(request.resolvedIdSala());
+
+		Reserva reserva = new Reserva();
+		reserva.setIdReserva(request.idReserva());
+		reserva.setUsuario(usuario);
+		reserva.setSala(sala);
+		reserva.setDataReservaInicial(request.dataReservaInicial());
+		reserva.setDataReservaFinal(request.dataReservaFinal());
+		reserva.setStatus(request.resolvedStatus());
+		return reserva;
 	}
 
 	@Override
@@ -89,8 +115,10 @@ public class ReservaServiceImpl implements ReservaService
 	}
 
 	@Override
-	public ReservaDTO update(Reserva reserva)
+	public ReservaDTO update(ReservaRequestDTO request)
 	{
+		Reserva reserva = toEntity(request);
+		resolveReferences(reserva);
 		return ReservaDTO.fromEntity(reservaRepository.save(reserva));
 	}
 

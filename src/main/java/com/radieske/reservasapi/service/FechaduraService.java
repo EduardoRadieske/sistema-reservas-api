@@ -3,17 +3,18 @@ package com.radieske.reservasapi.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.radieske.reservasapi.model.Fechadura;
+import com.radieske.reservasapi.dto.FechaduraRequestDTO;
+import com.radieske.reservasapi.dto.FechaduraResponseDTO;
 
 public interface FechaduraService
 {
-	Fechadura save(Fechadura fechadura);
+	FechaduraResponseDTO save(FechaduraRequestDTO fechadura);
 
-	List<Fechadura> findAll();
+	List<FechaduraResponseDTO> findAll();
 
-	Optional<Fechadura> findById(Integer id);
+	Optional<FechaduraResponseDTO> findById(Integer id);
 
-	Fechadura update(Fechadura fechadura);
+	FechaduraResponseDTO update(FechaduraRequestDTO fechadura);
 
 	void deleteById(Integer id);
 }

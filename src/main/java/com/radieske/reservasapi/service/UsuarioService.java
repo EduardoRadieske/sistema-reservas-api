@@ -3,15 +3,21 @@ package com.radieske.reservasapi.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.radieske.reservasapi.dto.UsuarioRequestDTO;
+import com.radieske.reservasapi.dto.UsuarioResponseDTO;
 import com.radieske.reservasapi.model.Usuario;
 
 public interface UsuarioService
 {
+	UsuarioResponseDTO save(UsuarioRequestDTO usuario);
+
 	Usuario save(Usuario usuario);
 
-	List<Usuario> findAll();
+	List<UsuarioResponseDTO> findAll();
 
-	Optional<Usuario> findById(Integer id);
+	Optional<UsuarioResponseDTO> findById(Integer id);
+
+	UsuarioResponseDTO update(UsuarioRequestDTO usuario);
 
 	Usuario update(Usuario usuario);
 

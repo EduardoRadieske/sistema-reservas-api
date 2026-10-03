@@ -2,10 +2,13 @@ package com.radieske.reservasapi.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.radieske.reservasapi.dto.ProvedorRequestDTO;
+import com.radieske.reservasapi.dto.ProvedorResponseDTO;
 import com.radieske.reservasapi.model.Provedor;
 import com.radieske.reservasapi.repository.ProvedorRepository;
 import com.radieske.reservasapi.service.ProvedorService;
@@ -17,32 +20,45 @@ public class ProvedorServiceImpl implements ProvedorService
 	private ProvedorRepository provedorRepository;
 
 	@Override
-	public Provedor save(Provedor provedor)
+	public ProvedorResponseDTO save(ProvedorRequestDTO provedor)
 	{
-		return provedorRepository.save(provedor);
+		return ProvedorResponseDTO.fromEntity(provedorRepository.save(toEntity(provedor)));
 	}
 
 	@Override
-	public List<Provedor> findAll()
+	public List<ProvedorResponseDTO> findAll()
 	{
-		return provedorRepository.findAll();
+		return provedorRepository.findAll().stream()
+				.map(ProvedorResponseDTO::fromEntity)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public Optional<Provedor> findById(Integer id)
+	public Optional<ProvedorResponseDTO> findById(Integer id)
 	{
-		return provedorRepository.findById(id);
+		return provedorRepository.findById(id).map(ProvedorResponseDTO::fromEntity);
 	}
 
 	@Override
-	public Provedor update(Provedor provedor)
+	public ProvedorResponseDTO update(ProvedorRequestDTO provedor)
 	{
-		return provedorRepository.save(provedor);
+		return ProvedorResponseDTO.fromEntity(provedorRepository.save(toEntity(provedor)));
 	}
 
 	@Override
 	public void deleteById(Integer id)
 	{
 		provedorRepository.deleteById(id);
+	}
+
+	private Provedor toEntity(ProvedorRequestDTO request)
+	{
+		Provedor provedor = new Provedor();
+		provedor.setIdProvedor(request.idProvedor());
+		provedor.setProvedor(request.provedor());
+		provedor.setStatus(request.resolvedStatus());
+		provedor.setClientId(request.clientId());
+		provedor.setSecret(request.secret());
+		return provedor;
 	}
 }
