@@ -34,8 +34,7 @@ public class SecurityConfig
 	@Autowired
 	private CustomAuthenticationEntryPoint authenticationEntryPoint;
 
-	public static final String[] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED =
-		{ "/auth/login" };
+	public static final String[] ENDPOINTS_WITH_AUTHENTICATION_NOT_REQUIRED = { "/auth/login" };
 
 	@Bean
 	SecurityFilterChain filterChain(HttpSecurity http) throws Exception
@@ -53,8 +52,7 @@ public class SecurityConfig
 	}
 
 	@Bean
-	AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-			throws Exception
+	AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception
 	{
 		return authenticationConfiguration.getAuthenticationManager();
 	}
